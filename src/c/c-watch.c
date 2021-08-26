@@ -3,15 +3,33 @@
 static Window *s_main_window;
 static TextLayer *s_time_layer;
 static TextLayer *s_sig_layer;
+static BitmapLayer *s_background_layer;
+static GBitmap *s_background_bitmap;
+
+// Declare globally
+static GFont s_time_font;
 
 static void main_window_load(Window *window) {
+  // Create GFont
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_22));
+
+  // Create GBitmap
+  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
+
   // Get information about the Window
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
+  // Create BitmapLayer to display the GBitmap
+  s_background_layer = bitmap_layer_create(bounds);
+
+  // Set the bitmap onto the layer and add to the window
+  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
+
   // Create the TextLayer with specific bounds
   s_time_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(58, 52), bounds.size.w, 50));
+      GRect(0, PBL_IF_ROUND_ELSE(58, 55), bounds.size.w, 50));
 
   // Improve the layout to be more like a watchface
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -32,7 +50,7 @@ static void main_window_load(Window *window) {
   text_layer_set_background_color(s_sig_layer, GColorClear);
   text_layer_set_text_color(s_sig_layer, GColorBlack);
   text_layer_set_text(s_sig_layer, "Muldy Watch");
-  text_layer_set_font(s_sig_layer, fonts_get_system_font(FONT_KEY_ROBOTO_CONDENSED_21));
+  text_layer_set_font(s_sig_layer, s_time_font);
   text_layer_set_text_alignment(s_sig_layer, GTextAlignmentCenter);
 
   // Add it as a child layer to the Window's root layer
@@ -41,6 +59,15 @@ static void main_window_load(Window *window) {
 }
 
 static void main_window_unload(Window *window) {
+  // Unload GFont
+  fonts_unload_custom_font(s_time_font);
+
+  // Destroy GBitmap
+  gbitmap_destroy(s_background_bitmap);
+
+  // Destroy BitmapLayer
+  bitmap_layer_destroy(s_background_layer);
+
   // Destroy TextLayer
   text_layer_destroy(s_time_layer);
   text_layer_destroy(s_sig_layer);

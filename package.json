@@ -2,7 +2,9 @@
   "name": "c-watch",
   "author": "MakeAwesomeHappen",
   "version": "1.0.0",
-  "keywords": ["pebble-app"],
+  "keywords": [
+    "pebble-app"
+  ],
   "private": true,
   "dependencies": {},
   "pebble": {
@@ -17,13 +19,25 @@
       "diorite"
     ],
     "watchapp": {
-      "watchface": true 
+      "watchface": true
     },
     "messageKeys": [
       "dummy"
     ],
     "resources": {
-      "media": []
+      "media": [
+        {
+          "type": "font",
+          "name": "FONT_PERFECT_DOS_22",
+          "file": "fonts/perfect-dos-vga.ttf",
+          "compatibility": "2.7"
+        },
+        {
+          "type": "bitmap",
+          "name": "IMAGE_BACKGROUND",
+          "file": "images/background.png"
+        }
+      ]
     }
   }
 }
