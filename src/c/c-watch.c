@@ -19,7 +19,7 @@ static void main_window_load(Window *window) {
   // Get information about the Window
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
+  
   // Create BitmapLayer to display the GBitmap
   s_background_layer = bitmap_layer_create(bounds);
 
@@ -29,7 +29,7 @@ static void main_window_load(Window *window) {
 
   // Create the TextLayer with specific bounds
   s_time_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(58, 55), bounds.size.w, 50));
+      GRect(0, 52, bounds.size.w, 50));
 
   // Improve the layout to be more like a watchface
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -44,7 +44,7 @@ static void main_window_load(Window *window) {
 
   // Create the TextLayer with specific bounds
   s_sig_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(58, bounds.size.h-42), bounds.size.w, 50));
+      GRect(0, PBL_IF_ROUND_ELSE(bounds.size.h-50,bounds.size.h-42), bounds.size.w, 50));
 
   // Improve the layout to be more like a watchface
   text_layer_set_background_color(s_sig_layer, GColorClear);
