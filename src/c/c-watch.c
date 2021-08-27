@@ -144,6 +144,11 @@ static void init() {
   app_message_register_inbox_dropped(inbox_dropped_callback);
   app_message_register_outbox_failed(outbox_failed_callback);
   app_message_register_outbox_sent(outbox_sent_callback);
+
+  // Open AppMessage
+  const int inbox_size = 128;
+  const int outbox_size = 128;
+  app_message_open(inbox_size, outbox_size);
 }
 
 int main(void) {
