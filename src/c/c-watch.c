@@ -1,4 +1,8 @@
 #include <pebble.h>
+#if defined(NOLOG)
+#undef APP_LOG
+#define APP_LOG(...)
+#endif
 
 static Window *s_main_window;
 static TextLayer *s_time_layer;

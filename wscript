@@ -11,6 +11,7 @@ out = 'build'
 
 def options(ctx):
     ctx.load('pebble_sdk')
+    ctx.load('defines',tooldir='waftools')
 
 
 def configure(ctx):
@@ -21,6 +22,8 @@ def configure(ctx):
     Universal configuration: add your change prior to calling ctx.load('pebble_sdk').
     """
     ctx.load('pebble_sdk')
+    ctx.load('pedantic',tooldir='waftools')
+    ctx.load('defines',tooldir='waftools')
 
 
 def build(ctx):
