@@ -10,6 +10,8 @@ static TextLayer *s_sig_layer;
 static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_weather_layer;
+static int s_battery_level;
+static Layer *s_battery_layer;
 
 // Store incoming information
 static char temperature_buffer[8];
@@ -22,6 +24,20 @@ static GFont s_weather_font;
 
 static uint flags = 0;
 
+static void battery_update_proc(Layer *layer, GContext *ctx) {
+  GRect bounds = layer_get_bounds(layer);
+
+  // Find the width of the bar (total width = 114px)
+  int width = (s_battery_level * 114) / 100;
+
+  // Draw the background
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx, bounds, 0, GCornerNone);
+
+  // Draw the bar
+  graphics_context_set_fill_color(ctx, GColorRed);
+  graphics_fill_rect(ctx, GRect(0, 0, width, bounds.size.h), 0, GCornerNone);
+}
 
 static void main_window_load(Window *window)
 {
@@ -84,6 +100,13 @@ static void main_window_load(Window *window)
   s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_20));
   text_layer_set_font(s_weather_layer, s_weather_font);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
+
+  // Create battery meter Layer
+  s_battery_layer = layer_create(GRect(14, 4, 115, 2));
+  layer_set_update_proc(s_battery_layer, battery_update_proc);
+
+  // Add to Window
+  layer_add_child(window_get_root_layer(window), s_battery_layer);
 }
 static void main_window_unload(Window *window)
 {
@@ -103,6 +126,8 @@ static void main_window_unload(Window *window)
   // Destroy weather elements
   text_layer_destroy(s_weather_layer);
   fonts_unload_custom_font(s_weather_font);
+
+  layer_destroy(s_battery_layer);
 }
 
 static void deinit()
@@ -146,6 +171,13 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
   update_time();
 }
 
+static void battery_callback(BatteryChargeState state) {
+  // Record the new battery level
+  s_battery_level = state.charge_percent;
+  APP_LOG(APP_LOG_LEVEL_INFO,"Battery: %d",s_battery_level);
+  // Update meter
+  layer_mark_dirty(s_battery_layer);
+}
 static void inbox_dropped_callback(AppMessageResult reason, void *context)
 {
   APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
@@ -200,6 +232,12 @@ static void init()
   const int inbox_size = 128;
   const int outbox_size = 128;
   app_message_open(inbox_size, outbox_size);
+
+  // Register for battery level updates
+  battery_state_service_subscribe(battery_callback);
+
+  // Ensure battery level is displayed from the start
+  battery_callback(battery_state_service_peek());
 }
 
 int main(void)
