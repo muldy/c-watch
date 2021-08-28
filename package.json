@@ -22,7 +22,11 @@
       "watchface": true
     },
     "messageKeys": [
-      "dummy"
+      "TEMPERATURE",
+      "CONDITIONS"
+    ],
+    "capabilities": [
+      "location"
     ],
     "resources": {
       "media": [

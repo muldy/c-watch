@@ -11,9 +11,17 @@ static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 static TextLayer *s_weather_layer;
 
+// Store incoming information
+static char temperature_buffer[8];
+static char conditions_buffer[32];
+static char weather_layer_buffer[32];
+
 // Declare globally
 static GFont s_time_font;
 static GFont s_weather_font;
+
+static uint flags = 0;
+
 
 static void main_window_load(Window *window)
 {
@@ -113,11 +121,28 @@ static void update_time()
   static char s_buffer[8];
   strftime(s_buffer, sizeof(s_buffer), clock_is_24h_style() ? "%H:%M" : "%I:%M", tick_time);
 
+  // Assemble full string and display
+  snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s, %s", temperature_buffer, conditions_buffer);
+  text_layer_set_text(s_weather_layer, weather_layer_buffer);
+
   // Display this time on the TextLayer
   text_layer_set_text(s_time_layer, s_buffer);
 }
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
+  // Get weather update every 30 minutes
+  if((tick_time->tm_min % 5 == 0) || flags==0 ) {
+    // Begin dictionary
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+
+    // Add a key-value pair
+    dict_write_uint8(iter, 0, 0);
+
+    // Send the message!
+    app_message_outbox_send();
+    flags = 1;
+  }
   update_time();
 }
 
@@ -135,6 +160,16 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context)
 }
 static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 {
+  // Read tuples for data
+  Tuple *temp_tuple = dict_find(iterator, MESSAGE_KEY_TEMPERATURE);
+  Tuple *conditions_tuple = dict_find(iterator, MESSAGE_KEY_CONDITIONS);
+
+  // If all data is available, use it
+  if(temp_tuple && conditions_tuple) {
+    snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)temp_tuple->value->int32);
+    snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_tuple->value->cstring);
+  }
+
 }
 
 static void init()
