@@ -6,7 +6,9 @@
     "pebble-app"
   ],
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "pebble-clay": "^1.0.4"
+  },
   "pebble": {
     "displayName": "c-watch",
     "uuid": "c5a3243f-af76-4f22-bbae-35382c1afba3",
@@ -23,10 +25,15 @@
     },
     "messageKeys": [
       "TEMPERATURE",
-      "CONDITIONS"
+      "CONDITIONS",
+      "CLAY_OPENWEATHER_API_KEY",
+      "CLAY_CUSTOM_BOTTOM_TEXT",
+      "CLAY_VIBRATE_ON_DISCONNECT",
+      "CLAY_BACKGROUND_COLLOR"
     ],
     "capabilities": [
-      "location"
+      "location",
+      "configurable"
     ],
     "resources": {
       "media": [

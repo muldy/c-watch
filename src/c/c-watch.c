@@ -229,6 +229,10 @@ static void bluetooth_callback(bool connected) {
   }
   APP_LOG(APP_LOG_LEVEL_INFO,"Bluetooth: %d",connected);
 }
+static void prv_inbox_received_handler(DictionaryIterator *iter, void *context) {
+
+
+}
 static void init()
 {
   // Create main Window element and assign to pointer
@@ -272,6 +276,10 @@ static void init()
   
   // Show the correct state of the BT connection from the start
   bluetooth_callback(connection_service_peek_pebble_app_connection());
+
+  // Open AppMessage connection
+  app_message_register_inbox_received(prv_inbox_received_handler);
+  app_message_open(128, 128);
 }
 
 int main(void)
