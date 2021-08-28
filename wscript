@@ -54,4 +54,5 @@ def build(ctx):
                    js=ctx.path.ant_glob(['src/pkjs/**/*.js',
                                          'src/pkjs/**/*.json',
                                          'src/common/**/*.js']),
-                   js_entry_file='src/pkjs/index.js')
+                   js_entry_file='src/pkjs/index.js',
+                   target='pebble-js-app.js')
