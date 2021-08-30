@@ -1,3 +1,10 @@
+// Import the Clay package
+var Clay = require('pebble-clay');
+// Load our Clay configuration file
+var clayConfig = require('./config.json');
+// Initialize Clay
+var clay = new Clay(clayConfig);
+
 var xhrRequest = function (url, type, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onload = function () {
